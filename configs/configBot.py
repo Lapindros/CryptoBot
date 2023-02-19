@@ -1,4 +1,3 @@
 CONFIG_BOT = {
-    'VOLUME_FACTOR': '2',
-
+    'MULTI_FACTOR': 10,
 }

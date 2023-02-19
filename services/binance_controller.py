@@ -7,6 +7,8 @@ import schedule
 import telebot
 
 from configs.configAPI import CONFIG_API
+from configs.configBot import CONFIG_BOT
+from services.logger import log_info
 
 exchange = ccxt.binance({
     'apiKey': CONFIG_API['BINANCE_API_KEY'],
@@ -22,6 +24,7 @@ bot = telebot.TeleBot(CONFIG_API['BOT_TOKEN'])
 def start(message):
     bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name} {message.from_user.last_name}')
     bot.send_message(message.chat.id, "Bot started...")
+    log_info("Bot started...")
     users = [message.chat.id]
     for chat in users:
         schedule.every(10).seconds.do(run_schedule_job, chat)
@@ -34,7 +37,8 @@ def start(message):
 def stop(message):
     schedule.clear()
     print(schedule.get_jobs())
-    bot.send_message(message.chat.id, "Bot stopped")
+    bot.send_message(message.chat.id, "Bot stopped!")
+    log_info("Bot stopped!")
 
 
 def get_usdt_pairs():
@@ -78,9 +82,8 @@ def detect_big_volume(df):
 
     # and df_copy['close'][last_value] > (average10_close_price * 10)
 
-    if df_copy['volume'][last_value] > (average10_volume * 10) and df_copy['close'][last_value] > (
-            average10_close_price * 10):
-        df_copy.loc[last_value, 'isBigValue'] = True
+    if df_copy['volume'][last_value] > (average10_volume * CONFIG_BOT['MULTI_FACTOR']) and df_copy['close'][last_value] > (average10_close_price * CONFIG_BOT['MULTI_FACTOR']):
+        df_copy.loc[last_value, 'need_to_buy'] = True
     else:
         df_copy.loc[last_value, 'need_to_buy'] = False
 
@@ -95,16 +98,18 @@ def check_buy_sell_signals(df, symbol, chat):
     last_row_index = len(df.index) - 1
     if df['need_to_buy'][last_row_index]:
         bot.send_message(chat, f'{dt_string} PUMP!!! - {symbol}')
+        log_info(f'{dt_string} PUMP!!! - {symbol}')
 
 
 def run_schedule_job(chat):
-    now = datetime.now()
+    # now = datetime.now()
+    # dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    # dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     symbols = get_usdt_pairs()
     for symbol in symbols:
         df = detect_big_volume(fetch_symbol_ohlcv(symbol))
-        print(f'{symbol} Fetching new bars for {dt_string}')
+        print(f'Fetching new bars for {symbol}')
         check_buy_sell_signals(df, symbol, chat)
 
 

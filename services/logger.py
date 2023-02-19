@@ -1,9 +1,11 @@
 import logging
 import sys
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format='%(asctime)s %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(
+    filename='logs.log',
+    level=logging.INFO,
+    format=f"%(asctime)s %(levelname)-8s: %(filename)s %(funcName)s %(lineno)s - %(message)s")
 
 
-def LOG(string):
+def log_info(string):
     logging.info(string)
