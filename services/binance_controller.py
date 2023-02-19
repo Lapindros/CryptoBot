@@ -61,7 +61,7 @@ def detect_big_volume(df):
     price_close_sums = 0
 
     df_copy = df
-    df_copy['isBigValue'] = False
+    df_copy['need_to_buy'] = False
 
     for current in range(0, len(df_copy.index) - 1):
         volume_sums += df_copy['volume'][current]
@@ -82,7 +82,7 @@ def detect_big_volume(df):
             average10_close_price * 10):
         df_copy.loc[last_value, 'isBigValue'] = True
     else:
-        df_copy.loc[last_value, 'isBigValue'] = False
+        df_copy.loc[last_value, 'need_to_buy'] = False
 
     return df_copy
 
@@ -93,9 +93,8 @@ def check_buy_sell_signals(df, symbol, chat):
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     print(df)
     last_row_index = len(df.index) - 1
-    print("df['isBigValue'][last_row_index]", df['isBigValue'][last_row_index])
-    if df['isBigValue'][last_row_index]:
-        bot.send_message(chat, f'{dt_string} {symbol} - PUMP!!! Buy!!!')
+    if df['need_to_buy'][last_row_index]:
+        bot.send_message(chat, f'{dt_string} PUMP!!! - {symbol}')
 
 
 def run_schedule_job(chat):
