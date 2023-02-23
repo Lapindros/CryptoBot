@@ -1,14 +1,9 @@
-# import telebot
-#
-# from configs.configAPI import CONFIG_API
-# from services.bot import start
-#
-# bot = telebot.TeleBot(CONFIG_API['BOT_TOKEN'])
-#
-#
-# def main():
-#     start()
-#
-#
-# if __name__ == '__main__':
-#     main()
+from services import binance_controller
+
+
+def main():
+    exec('binance_controller.py')
+
+
+if __name__ == '__main__':
+    main()

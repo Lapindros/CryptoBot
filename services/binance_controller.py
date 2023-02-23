@@ -25,7 +25,7 @@ def start(message):
     bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name} {message.from_user.last_name}')
     bot.send_message(message.chat.id, "Bot started...")
     log_info("Bot started...")
-    users = [message.chat.id]
+    users = [message.from_user.id]
     for chat in users:
         schedule.every(10).seconds.do(run_schedule_job, chat)
     while True:

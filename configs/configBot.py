@@ -1,3 +1,3 @@
 CONFIG_BOT = {
-    'MULTI_FACTOR': 10,
+    'MULTI_FACTOR': 1,
 }
